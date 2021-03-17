@@ -278,7 +278,9 @@ typename PointMatcher<T>::TransformationParameters PointToPlaneErrorMinimizer<T>
 					transform.translation() = x.segment(3, 3);  //x=[alpha,beta,gamma,x,y,z]
 				} else
 				{
-					transform.translation() = x.segment(1, 3);  //x=[gamma,x,y,z]
+					Vector unitT(3, 1);
+					unitT << 0, 0, x[3];
+					transform.translation() = unitT;  //x=[gamma,x,y,z]
 				}
 
 				mOut = transform.matrix();

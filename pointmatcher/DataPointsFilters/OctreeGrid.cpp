@@ -270,7 +270,7 @@ bool OctreeGridDataPointsFilter<T>::MedoidSampler::operator()(Octree_<T,dim>& oc
 				
 		//Switch columns j and idx
 		pts.swapCols(idx, medId);
-	
+
 		//Maintain new index position	
 		mapidx[idx] = medId;
 	
