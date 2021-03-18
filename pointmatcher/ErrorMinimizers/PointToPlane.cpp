@@ -54,13 +54,14 @@ template<typename T>
 PointToPlaneErrorMinimizer<T>::PointToPlaneErrorMinimizer(const Parameters& params):
 	ErrorMinimizer(name(), availableParameters(), params),
 	force2D(Parametrizable::get<T>("force2D")),
-    force4DOF(Parametrizable::get<T>("force4DOF"))
+    force4DOF(Parametrizable::get<T>("force4DOF")|| Parametrizable::get<T>("force2DOF")),
+	force2DOF(Parametrizable::get<T>("force2DOF"))
 {
 	if(force2D)
 		{
-			if (force4DOF)
+			if (force4DOF || force2DOF)
 			{
-				throw PointMatcherSupport::ConfigurationError("Force 2D cannot be used together with force4DOF.");
+				throw PointMatcherSupport::ConfigurationError("Force 2D cannot be used together with force4DOF or force2DOF.");
 			}
 			else
 			{
@@ -70,6 +71,10 @@ PointToPlaneErrorMinimizer<T>::PointToPlaneErrorMinimizer(const Parameters& para
 	else if(force4DOF)
 	{
 	 	LOG_INFO_STREAM("PointMatcher::PointToPlaneErrorMinimizer - minimization will be in 4-DOF (yaw,x,y,z).");
+	}
+	else if (force2DOF)
+	{
+		LOG_INFO_STREAM("PointMatcher::PointToPlaneErrorMinimizer - minimization will be in 4-DOF (yaw,z).");
 	}
 	else
 	{
@@ -81,13 +86,14 @@ template<typename T>
 PointToPlaneErrorMinimizer<T>::PointToPlaneErrorMinimizer(const ParametersDoc paramsDoc, const Parameters& params):
 	ErrorMinimizer(name(), paramsDoc, params),
 	force2D(Parametrizable::get<T>("force2D")),
-	force4DOF(Parametrizable::get<T>("force4DOF"))
+	force2DOF(Parametrizable::get<T>("force2DOF")),
+	force4DOF(Parametrizable::get<T>("force4DOF")||Parametrizable::get<T>("force2DOF"))
 {
-	if(force2D)
+	if(force2D )
 	{
-		if (force4DOF)
+		if (force4DOF || force2DOF)
 		{
-			throw PointMatcherSupport::ConfigurationError("Force 2D cannot be used together with force4DOF.");
+			throw PointMatcherSupport::ConfigurationError("Force 2D cannot be used together with force4DOF or force2DOF.");
 		}
 		else
 		{
@@ -97,6 +103,10 @@ PointToPlaneErrorMinimizer<T>::PointToPlaneErrorMinimizer(const ParametersDoc pa
 	else if(force4DOF)
 	{
 		LOG_INFO_STREAM("PointMatcher::PointToPlaneErrorMinimizer - minimization will be in 4-DOF (yaw,x,y,z).");
+	}
+	else if (force2DOF)
+	{
+		LOG_INFO_STREAM("PointMatcher::PointToPlaneErrorMinimizer - minimization will be in 4-DOF (yaw,z).");
 	}
 	else
 	{
@@ -276,11 +286,20 @@ typename PointMatcher<T>::TransformationParameters PointToPlaneErrorMinimizer<T>
 				if (!force4DOF)
 				{
 					transform.translation() = x.segment(3, 3);  //x=[alpha,beta,gamma,x,y,z]
-				} else
+				} 
+				else
 				{
-					Vector unitT(3, 1);
-					unitT << 0, 0, x[3];
-					transform.translation() = unitT;  //x=[gamma,x,y,z]
+					if (force2DOF)
+					{
+						Vector unitT(3, 1);
+						unitT << 0, 0, x[3];
+						transform.translation() = unitT;  //x=[gamma,x,y,z]
+					}
+					else
+					{
+						transform.translation() = x.segment(1, 3);  //x=[gamma,x,y,z]
+					}
+					
 				}
 
 				mOut = transform.matrix();
