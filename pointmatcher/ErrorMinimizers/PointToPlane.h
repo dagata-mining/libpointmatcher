@@ -71,7 +71,8 @@ struct PointToPlaneErrorMinimizer: public PointMatcher<T>::ErrorMinimizer
         return {
                 {"force2D", "If set to true(1), the minimization will be forced to give a solution in 2D (i.e., on the XY-plane) even with 3D inputs.", "0", "0", "1", &P::Comp<bool>},
                 {"force4DOF", "If set to true(1), the minimization will optimize only yaw and translation, pitch and roll will follow the prior.", "0", "0", "1", &P::Comp<bool>},
-				{"force2DOF", "If set to true(1), the minimization will optimize only yaw and z-translation, pitch and roll will follow the prior.", "0", "0", "1", &P::Comp<bool>}
+				{"force2DOF", "If set to true(1), the minimization will optimize only yaw and z-translation, pitch and roll will follow the prior.", "0", "0", "1", &P::Comp<bool>},
+				{"force1DOF", "If set to true(1), the minimization will optimize only z-translation", "0", "0", "1", &P::Comp<bool>}
 
         };
     }
@@ -79,6 +80,7 @@ struct PointToPlaneErrorMinimizer: public PointMatcher<T>::ErrorMinimizer
     const bool force2D;
     const bool force4DOF;
 	const bool force2DOF;
+	const bool force1DOF;
 
     PointToPlaneErrorMinimizer(const Parameters& params = Parameters());
     PointToPlaneErrorMinimizer(const ParametersDoc paramsDoc, const Parameters& params);

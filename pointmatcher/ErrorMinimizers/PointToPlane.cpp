@@ -54,8 +54,9 @@ template<typename T>
 PointToPlaneErrorMinimizer<T>::PointToPlaneErrorMinimizer(const Parameters& params):
 	ErrorMinimizer(name(), availableParameters(), params),
 	force2D(Parametrizable::get<T>("force2D")),
-    force4DOF(Parametrizable::get<T>("force4DOF")|| Parametrizable::get<T>("force2DOF")),
-	force2DOF(Parametrizable::get<T>("force2DOF"))
+    force4DOF(Parametrizable::get<T>("force4DOF")|| Parametrizable::get<T>("force2DOF")||Parametrizable::get<T>("force1DOF")),
+	force2DOF(Parametrizable::get<T>("force2DOF")),
+	force1DOF(Parametrizable::get<T>("force1DOF"))
 {
 	if(force2D)
 		{
@@ -86,8 +87,9 @@ template<typename T>
 PointToPlaneErrorMinimizer<T>::PointToPlaneErrorMinimizer(const ParametersDoc paramsDoc, const Parameters& params):
 	ErrorMinimizer(name(), paramsDoc, params),
 	force2D(Parametrizable::get<T>("force2D")),
+	force4DOF(Parametrizable::get<T>("force4DOF") || Parametrizable::get<T>("force2DOF") || Parametrizable::get<T>("force1DOF")),
 	force2DOF(Parametrizable::get<T>("force2DOF")),
-	force4DOF(Parametrizable::get<T>("force4DOF")||Parametrizable::get<T>("force2DOF"))
+	force1DOF(Parametrizable::get<T>("force1DOF"))
 {
 	if(force2D )
 	{
@@ -271,10 +273,16 @@ typename PointMatcher<T>::TransformationParameters PointToPlaneErrorMinimizer<T>
 				if (!force4DOF)
 				{
 					transform = Eigen::AngleAxis<T>(x.head(3).norm(), x.head(3).normalized()); //x=[alpha,beta,gamma,x,y,z]
-				} else  // 4DOF needs only one number, the rotation around the Z axis
+				} else if (force1DOF)  // 4DOF needs only one number, the rotation around the Z axis
 				{
 					Vector unitZ(3,1);
 					unitZ << 0,0,1;
+					transform = Eigen::AngleAxis<T>(0, unitZ);   //x=[gamma,x,y,z]
+				}
+				else  // 4DOF needs only one number, the rotation around the Z axis
+				{
+					Vector unitZ(3, 1);
+					unitZ << 0, 0, 1;
 					transform = Eigen::AngleAxis<T>(x(0), unitZ);   //x=[gamma,x,y,z]
 				}
 
@@ -289,7 +297,7 @@ typename PointMatcher<T>::TransformationParameters PointToPlaneErrorMinimizer<T>
 				} 
 				else
 				{
-					if (force2DOF)
+					if (force2DOF || force1DOF)
 					{
 						Vector unitT(3, 1);
 						unitT << 0, 0, x[3];
