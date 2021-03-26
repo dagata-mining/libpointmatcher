@@ -56,7 +56,8 @@ PointToPlaneErrorMinimizer<T>::PointToPlaneErrorMinimizer(const Parameters& para
 	force2D(Parametrizable::get<T>("force2D")),
     force4DOF(Parametrizable::get<T>("force4DOF")|| Parametrizable::get<T>("force2DOF")||Parametrizable::get<T>("force1DOF")),
 	force2DOF(Parametrizable::get<T>("force2DOF")),
-	force1DOF(Parametrizable::get<T>("force1DOF"))
+	force1DOF(Parametrizable::get<T>("force4DOF"))
+	//force1DOF(Parametrizable::get<T>("force1DOF"))
 {
 	if(force2D)
 		{
@@ -89,7 +90,8 @@ PointToPlaneErrorMinimizer<T>::PointToPlaneErrorMinimizer(const ParametersDoc pa
 	force2D(Parametrizable::get<T>("force2D")),
 	force4DOF(Parametrizable::get<T>("force4DOF") || Parametrizable::get<T>("force2DOF") || Parametrizable::get<T>("force1DOF")),
 	force2DOF(Parametrizable::get<T>("force2DOF")),
-	force1DOF(Parametrizable::get<T>("force1DOF"))
+	force1DOF(Parametrizable::get<T>("force4DOF"))
+	//force1DOF(Parametrizable::get<T>("force1DOF"))
 {
 	if(force2D )
 	{
